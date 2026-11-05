@@ -250,9 +250,10 @@ button.link-button {
 
 .sheet-table { width: 100%; border-collapse: collapse; font-size: 1rem; }
 .sheet-table th, .sheet-table td { border: 1px solid #333; padding: 10px 8px; text-align: left; }
-.sheet-table th { background: #eee; }
+.sheet-table th { background: #eee; white-space: nowrap; }
 .sheet-table .num { text-align: right; white-space: nowrap; }
-.sheet-table .check { width: 2.5em; text-align: center; font-size: 1.3rem; }
+.sheet-table .check { width: 2.5em; text-align: center; }
+.sheet-table td.check { font-size: 1.4rem; line-height: 1; }
 .sheet-table .total-label { text-align: right; font-weight: 600; }
 .sheet-table .total { font-weight: 700; font-size: 1.1rem; }
 .sheet-empty { margin: 8px 0 0; }
