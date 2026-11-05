@@ -12,7 +12,7 @@ export function todayString() {
 const form = document.getElementById('order-form');
 const messageEl = document.getElementById('order-form-message');
 
-// 入力欄の名前と、エラーのときに出す項目名
+// 入力欄の名前と、エラーのときに出す項目名（画面に並ぶ順）
 const LABELS = {
   orderDate: '注文日',
   customerType: '注文元の種類',
@@ -23,6 +23,7 @@ const LABELS = {
   shippingMethod: '送り方',
   orderChannel: '注文の届き方',
 };
+const FIELD_ORDER = Object.keys(LABELS);
 
 function showMessage(text, kind) {
   messageEl.textContent = text;
@@ -56,6 +57,7 @@ function readForm() {
     .forEach((key) => { if (!data[key]) bad.push(key); });
   if (form.quantity.value === '' || !Number.isInteger(data.quantity) || data.quantity < 1) bad.push('quantity');
   if (form.unitPrice.value === '' || !Number.isInteger(data.unitPrice) || data.unitPrice < 0) bad.push('unitPrice');
+  bad.sort((a, b) => FIELD_ORDER.indexOf(a) - FIELD_ORDER.indexOf(b));
 
   // 赤くする欄を付け直す
   form.querySelectorAll('.field').forEach((el) => el.classList.remove('invalid'));
