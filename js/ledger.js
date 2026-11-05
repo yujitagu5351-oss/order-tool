@@ -1,11 +1,35 @@
 // 台帳の画面（WBS 1-4）：登録した注文を新しい順に表で並べる
 // 機能3（WBS 3-1〜3-3）：出荷済みにする／元に戻す、出荷予定日を過ぎた未出荷の注文を目立たせる
+// 機能8（WBS 8-1・8-2）：「直す」で入力画面を直す形で開く（消すのも、そこから）
 import { watchOrders, formatOrderNo, markShipped, unmarkShipped } from './orders.js';
-import { todayString } from './order-form.js';
+import { todayString, startEdit } from './order-form.js';
 
 const bodyEl = document.getElementById('ledger-body');
 const statusEl = document.getElementById('ledger-status');
+const flashEl = document.getElementById('ledger-flash');
 let stopWatching = null;
+let ordersById = new Map(); // 「直す」を押したときに、その注文の中身を取り出すため
+
+// 直した・消したあとに、台帳の上にひとこと出す（次に別の画面へ移るまで）
+export function showLedgerFlash(text) {
+  flashEl.textContent = text;
+  flashEl.hidden = false;
+}
+window.addEventListener('hashchange', () => {
+  if (location.hash !== '#ledger') flashEl.hidden = true;
+});
+
+function editCell(o) {
+  const td = document.createElement('td');
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'small-button';
+  button.textContent = '直す';
+  button.dataset.id = o.id;
+  button.dataset.action = 'edit';
+  td.append(button);
+  return td;
+}
 
 // "2026-11-06" → "11/06"。年が今年でなければ年も付ける
 function shortDate(s) {
@@ -57,6 +81,7 @@ function shipCell(o, overdue) {
 export function render(orders) {
   const today = todayString();
   let overdueCount = 0;
+  ordersById = new Map(orders.map((o) => [o.id, o]));
   bodyEl.replaceChildren(...orders.map((o) => {
     // 出荷予定日を過ぎても出荷済みになっていない（WBS 3-3）
     const overdue = !o.shippedDate && o.plannedShipDate < today;
@@ -67,6 +92,7 @@ export function render(orders) {
     tr.append(
       cell(formatOrderNo(o.orderNo)),
       shipCell(o, overdue),
+      editCell(o),
       cell(shortDate(o.orderDate)),
       cell(o.customerType),
       cell(o.customerName),
@@ -93,6 +119,13 @@ export function render(orders) {
 bodyEl.addEventListener('click', async (e) => {
   const button = e.target.closest('button[data-action]');
   if (!button) return;
+  if (button.dataset.action === 'edit') {
+    const order = ordersById.get(button.dataset.id);
+    if (!order) return;
+    startEdit(order);
+    location.hash = '#order';
+    return;
+  }
   button.disabled = true; // 2回押さないように（成功すると表が描き直される）
   try {
     if (button.dataset.action === 'ship') {

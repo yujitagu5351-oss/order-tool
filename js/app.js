@@ -7,34 +7,57 @@ import {
   signOut,
 } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
-import { initOrderForm } from './order-form.js';
-import { addOrder, formatOrderNo } from './orders.js';
-import { startLedger, stopLedger } from './ledger.js';
+import { initOrderForm, isEditing, endEdit } from './order-form.js';
+import { addOrder, updateOrder, deleteOrder, formatOrderNo } from './orders.js';
+import { startLedger, stopLedger, showLedgerFlash } from './ledger.js';
 import { startSheet, stopSheet } from './sheet.js';
 import { startSettings, stopSettings, getSettings } from './settings.js';
 import './export.js'; // 書き出しの画面（ボタンを押したときだけ台帳を読むので、開始・停止は要らない）
 
-// 注文の入力画面：「登録」で注文番号を付けて台帳に入れる（WBS 1-2）
+// 注文の入力画面：「登録」で注文番号を付けて台帳に入れる（WBS 1-2）。
+// 台帳の「直す」から来たときは、その注文を直して保存する（WBS 8-1）
+function errorReason(e) {
+  return e.code === 'permission-denied'
+    ? '台帳に書き込む権限がありません。運営者のアカウントでログインし直してください'
+    : '電波やWi-Fiを確かめて、もう一度押してください';
+}
+
 initOrderForm(async (data, ui) => {
-  const button = document.querySelector('#order-form button[type="submit"]');
-  button.disabled = true; // 2回押して二重に登録しないように
-  button.textContent = '登録しています…';
+  ui.setBusy(true); // 2回押して二重に登録しないように
   try {
-    const orderNo = await addOrder(data, getSettings());
-    ui.resetOrderForm();
-    ui.showMessage(
-      `注文番号 ${formatOrderNo(orderNo)} で登録しました：`
-        + `${data.customerName}／${data.quantity}袋／出荷予定日 ${data.plannedShipDate}／${data.shippingMethod}`,
-      'done',
-    );
+    if (ui.editing) {
+      await updateOrder(ui.editing, data, getSettings());
+      const no = formatOrderNo(ui.editing.orderNo);
+      ui.endEdit();
+      showLedgerFlash(`注文 ${no} を直しました`);
+      location.hash = '#ledger';
+    } else {
+      const orderNo = await addOrder(data, getSettings());
+      ui.resetOrderForm();
+      ui.showMessage(
+        `注文番号 ${formatOrderNo(orderNo)} で登録しました：`
+          + `${data.customerName}／${data.quantity}袋／出荷予定日 ${data.plannedShipDate}／${data.shippingMethod}`,
+        'done',
+      );
+    }
   } catch (e) {
-    const reason = e.code === 'permission-denied'
-      ? '台帳に書き込む権限がありません。運営者のアカウントでログインし直してください'
-      : '電波やWi-Fiを確かめて、もう一度押してください';
-    ui.showMessage('登録できませんでした。' + reason + '（' + (e.code || e.message) + '）', 'error');
+    ui.showMessage((ui.editing ? '保存' : '登録') + 'できませんでした。' + errorReason(e) + '（' + (e.code || e.message) + '）', 'error');
   } finally {
-    button.disabled = false;
-    button.textContent = '登録';
+    ui.setBusy(false);
+  }
+}, async (order, ui) => {
+  // 注文を消す（WBS 8-2）。消すと元に戻せないので、確かめてから
+  const no = formatOrderNo(order.orderNo);
+  if (!confirm(`注文 ${no}（${order.customerName}／${order.quantity}袋）を消します。元に戻せません。よいですか？`)) return;
+  ui.setBusy(true);
+  try {
+    await deleteOrder(order.id);
+    ui.endEdit();
+    showLedgerFlash(`注文 ${no} を消しました（番号 ${no} は欠番になります）`);
+    location.hash = '#ledger';
+  } catch (e) {
+    ui.showMessage('消せませんでした。' + errorReason(e) + '（' + (e.code || e.message) + '）', 'error');
+    ui.setBusy(false);
   }
 });
 
@@ -101,6 +124,7 @@ function startAuth() {
 
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
+      if (isEditing()) endEdit();
       stopLedger();
       stopSheet();
       stopSettings();
@@ -143,6 +167,9 @@ const DEFAULT_VIEW = 'order';
 function showView() {
   const name = location.hash.slice(1);
   const view = VIEWS.includes(name) ? name : DEFAULT_VIEW;
+
+  // 注文を直している途中でほかの画面へ移ったら、直すのをやめて登録の形に戻す
+  if (view !== 'order' && isEditing()) endEdit();
 
   VIEWS.forEach((v) => {
     document.getElementById('view-' + v).classList.toggle('active', v === view);

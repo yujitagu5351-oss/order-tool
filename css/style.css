@@ -187,6 +187,11 @@ button.link-button {
 
 .order-form button[type="submit"] { width: 100%; }
 
+/* 注文を直す形（WBS 8） */
+.edit-actions { display: flex; justify-content: space-between; gap: 8px; margin-top: 10px; }
+.edit-actions button[hidden] { display: none; }
+button.danger { color: #cf222e; border-color: #cf222e; background: #fff; }
+
 /* 設定の画面 */
 .settings-note { margin: 0 0 14px; }
 .fee-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; margin-top: 8px; }

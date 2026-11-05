@@ -2,6 +2,7 @@
 import { db } from './firebase.js';
 import {
   collection,
+  deleteDoc,
   doc,
   getDocs,
   onSnapshot,
@@ -17,6 +18,21 @@ import {
 export async function fetchAllOrders() {
   const snap = await getDocs(collection(db, 'orders'));
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+// 注文を直す（WBS 8-1）。注文番号・出荷日・登録日時はそのまま。
+// 作業代（1袋あたり）は登録時の金額を残す。送り方を変えたときだけ、送料を今の設定の金額に入れ直す
+export function updateOrder(before, input, settings) {
+  const changes = { ...input, updatedAt: serverTimestamp() };
+  if (input.shippingMethod !== before.shippingMethod) {
+    changes.shippingFee = settings ? settings.shippingFees[input.shippingMethod] : null;
+  }
+  return updateDoc(doc(db, 'orders', before.id), changes);
+}
+
+// 注文を消す（WBS 8-2）。注文番号は詰めない（消した番号は欠番になる）
+export function deleteOrder(orderId) {
+  return deleteDoc(doc(db, 'orders', orderId));
 }
 
 // 出荷済みにする（WBS 3-1）：注文の出荷日に shippedDate（"YYYY-MM-DD"、ふつうは今日）を入れる

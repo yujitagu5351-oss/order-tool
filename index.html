@@ -41,7 +41,7 @@
 
     <div class="only-ok">
       <section id="view-order" class="view">
-        <h2>注文の登録</h2>
+        <h2 id="order-title">注文の登録</h2>
         <form id="order-form" class="order-form" novalidate>
           <div class="field">
             <label for="f-orderDate">注文日</label>
@@ -107,11 +107,16 @@
 
           <p id="order-form-message" class="form-message" hidden></p>
           <button type="submit" class="primary">登録</button>
+          <div class="edit-actions">
+            <button type="button" id="order-cancel-edit" hidden>直すのをやめる</button>
+            <button type="button" id="order-delete" class="danger" hidden>この注文を消す</button>
+          </div>
         </form>
       </section>
 
       <section id="view-ledger" class="view">
         <h2>台帳</h2>
+        <p id="ledger-flash" class="form-message done" hidden></p>
         <p id="ledger-status" class="ledger-status">読み込んでいます…</p>
         <div class="table-scroll">
           <table class="ledger-table">
@@ -119,6 +124,7 @@
               <tr>
                 <th>注文番号</th>
                 <th>出荷</th>
+                <th></th>
                 <th>注文日</th>
                 <th>種類</th>
                 <th>注文元</th>
