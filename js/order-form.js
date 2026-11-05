@@ -1,6 +1,7 @@
 // 注文の入力画面（WBS 1-1）：初期値を入れ、「登録」で入力をチェックして、1件分の注文データにまとめる
 // Firestore への保存は orders.js（WBS 1-2）
 import { HOLIDAY_YEARS, nextBusinessDay } from './holidays.js';
+import { getSettings, onSettingsChange } from './settings.js';
 
 // 今日の日付を "YYYY-MM-DD" で返す（端末の時刻＝日本時間で数える）
 export function todayString() {
@@ -32,12 +33,24 @@ function showMessage(text, kind) {
   messageEl.hidden = false;
 }
 
-// 初期値：注文日＝今日、出荷予定日＝翌営業日（土日祝日を除く。WBS 1-3）
+// 単価の初期値（設定の画面で決めた金額。WBS 5-1）を入れる
+function fillDefaultUnitPrice() {
+  const s = getSettings();
+  form.unitPrice.value = s ? s.defaultUnitPrice : '';
+}
+
+// 設定が読み込まれたら、単価がまだ空のときだけ初期値を入れる（入力中の値は消さない）
+onSettingsChange(() => {
+  if (form.unitPrice.value === '') fillDefaultUnitPrice();
+});
+
+// 初期値：注文日＝今日、出荷予定日＝翌営業日（土日祝日を除く。WBS 1-3）、単価＝設定の初期値
 export function resetOrderForm() {
   form.reset();
   const today = todayString();
   form.orderDate.value = today;
   form.plannedShipDate.value = nextBusinessDay(today);
+  fillDefaultUnitPrice();
 
   // 祝日の一覧に入っていない年なら、毎年の追記を忘れていることを知らせる
   const hint = document.getElementById('ship-date-hint');

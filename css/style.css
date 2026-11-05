@@ -186,6 +186,11 @@ button.link-button {
 
 .order-form button[type="submit"] { width: 100%; }
 
+/* 設定の画面 */
+.settings-note { margin: 0 0 14px; }
+.fee-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; margin-top: 8px; }
+.fee-grid .field > label { font-weight: normal; }
+
 /* 台帳の一覧：狭い画面では表だけ横にスクロールする */
 .ledger-status { color: var(--muted); font-size: 0.9rem; margin: 0 0 8px; }
 
@@ -271,7 +276,7 @@ button.link-button {
   main { max-width: none; padding: 0; }
 
   /* 出荷指示書の画面以外は印刷しない */
-  #view-order, #view-ledger { display: none !important; }
+  #view-order, #view-ledger, #view-settings { display: none !important; }
 
   .sheet { border: none; border-radius: 0; padding: 0; }
   .sheet-header { border-bottom: 2px solid #000; padding-bottom: 6px; margin-bottom: 10px; }

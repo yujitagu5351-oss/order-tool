@@ -43,8 +43,15 @@ export function formatOrderNo(n) {
 
 // 注文を1件、台帳に追加する（WBS 1-2）。付けた注文番号（数値）を返す。
 // meta/counter の lastOrderNo を1つ進めることと、注文の追加を1つのトランザクションで行うので、
-// PCとスマホで同時に登録しても番号は重ならない
-export async function addOrder(data) {
+// PCとスマホで同時に登録しても番号は重ならない。
+// settings（固定額の設定）があれば、その時点の作業代（1袋あたり）と送料を注文に記録する（WBS 5-1）。
+// 設定がまだなければ null を入れ、CSV では書き出す時点の設定で計算する
+export async function addOrder(input, settings) {
+  const data = {
+    ...input,
+    workFeePerBag: settings ? settings.workFeePerBag : null,
+    shippingFee: settings ? settings.shippingFees[input.shippingMethod] : null,
+  };
   const counterRef = doc(db, 'meta', 'counter');
   const orderRef = doc(collection(db, 'orders'));
 

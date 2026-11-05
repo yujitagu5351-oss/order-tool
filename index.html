@@ -14,6 +14,7 @@
       <a href="#order" data-view="order">注文の登録</a>
       <a href="#ledger" data-view="ledger">台帳</a>
       <a href="#sheet" data-view="sheet">出荷指示書</a>
+      <a href="#settings" data-view="settings">設定</a>
     </nav>
   </header>
 
@@ -169,6 +170,51 @@
           </table>
           <p id="sheet-empty" class="sheet-empty" hidden>この日に出荷する注文はありません。</p>
         </article>
+      </section>
+
+      <section id="view-settings" class="view">
+        <h2>設定（固定額）</h2>
+        <form id="settings-form" class="order-form" novalidate>
+          <p class="hint settings-note">金額を変えても、すでに登録した注文の金額は変わりません。変えた後に登録する注文から使います。</p>
+
+          <div class="field">
+            <label for="s-defaultUnitPrice">単価の初期値（円／袋）</label>
+            <input type="number" id="s-defaultUnitPrice" name="defaultUnitPrice" min="0" step="1" inputmode="numeric">
+            <p class="hint">注文の登録で、単価の欄に最初から入る金額。注文ごとに変えられます</p>
+          </div>
+
+          <div class="field">
+            <label for="s-workFeePerBag">作業代（円／袋）</label>
+            <input type="number" id="s-workFeePerBag" name="workFeePerBag" min="0" step="1" inputmode="numeric">
+            <p class="hint">委託先に払う、1袋あたりの作業代</p>
+          </div>
+
+          <fieldset class="field">
+            <legend>送料（円／件）</legend>
+            <p class="hint">1件の注文を送るのにかかる送料。送り方ごとに決めます</p>
+            <div class="fee-grid">
+              <div class="field">
+                <label for="s-ship-yupack">ゆうパック</label>
+                <input type="number" id="s-ship-yupack" name="ship-ゆうパック" min="0" step="1" inputmode="numeric">
+              </div>
+              <div class="field">
+                <label for="s-ship-takkyubin">宅急便</label>
+                <input type="number" id="s-ship-takkyubin" name="ship-宅急便" min="0" step="1" inputmode="numeric">
+              </div>
+              <div class="field">
+                <label for="s-ship-small">小型便</label>
+                <input type="number" id="s-ship-small" name="ship-小型便" min="0" step="1" inputmode="numeric">
+              </div>
+              <div class="field">
+                <label for="s-ship-direct">直接お届け</label>
+                <input type="number" id="s-ship-direct" name="ship-直接お届け" min="0" step="1" inputmode="numeric">
+              </div>
+            </div>
+          </fieldset>
+
+          <p id="settings-message" class="form-message" hidden></p>
+          <button type="submit" class="primary">保存</button>
+        </form>
       </section>
     </div>
   </main>

@@ -11,6 +11,7 @@ import { initOrderForm } from './order-form.js';
 import { addOrder, formatOrderNo } from './orders.js';
 import { startLedger, stopLedger } from './ledger.js';
 import { startSheet, stopSheet } from './sheet.js';
+import { startSettings, stopSettings, getSettings } from './settings.js';
 
 // 注文の入力画面：「登録」で注文番号を付けて台帳に入れる（WBS 1-2）
 initOrderForm(async (data, ui) => {
@@ -18,7 +19,7 @@ initOrderForm(async (data, ui) => {
   button.disabled = true; // 2回押して二重に登録しないように
   button.textContent = '登録しています…';
   try {
-    const orderNo = await addOrder(data);
+    const orderNo = await addOrder(data, getSettings());
     ui.resetOrderForm();
     ui.showMessage(
       `注文番号 ${formatOrderNo(orderNo)} で登録しました：`
@@ -101,6 +102,7 @@ function startAuth() {
     if (!user) {
       stopLedger();
       stopSheet();
+      stopSettings();
       setAuthState('signed-out');
       setStatus('Firebase：接続しています（' + app.options.projectId + '）。ログインしていません');
       return;
@@ -112,10 +114,12 @@ function startAuth() {
       setAuthState('ok');
       startLedger();
       startSheet();
+      startSettings();
       setStatus('Firebase：接続しています（' + app.options.projectId + '）。台帳を使えます');
     } else {
       stopLedger();
       stopSheet();
+      stopSettings();
       setAuthState('denied');
       setStatus('Firebase：台帳を読めません（' + result.code + '）', true);
     }
@@ -132,7 +136,7 @@ if (isConfigured) {
 
 // ---- 画面の切り替え：URL の # （#order / #ledger / #sheet）で表示する画面を決める ----
 
-const VIEWS = ['order', 'ledger', 'sheet'];
+const VIEWS = ['order', 'ledger', 'sheet', 'settings'];
 const DEFAULT_VIEW = 'order';
 
 function showView() {
