@@ -7,6 +7,17 @@ import {
   signOut,
 } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+import { initOrderForm } from './order-form.js';
+
+// 注文の入力画面。保存（注文番号を付けて台帳に入れる）は WBS 1-2 でつくる。
+// それまでは、入力チェックを通った内容を確かめのために表示するだけ
+initOrderForm((data, ui) => {
+  ui.showMessage(
+    '入力はOKです（まだ保存はしません。保存はステップ6でつくります）：'
+      + `${data.customerName}／${data.quantity}袋／出荷予定日 ${data.plannedShipDate}／${data.shippingMethod}`,
+    'done',
+  );
+});
 
 const statusEl = document.getElementById('firebase-status');
 

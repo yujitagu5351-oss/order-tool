@@ -128,6 +128,61 @@ button.link-button {
 
 .uid-line { font-size: 0.8rem; color: var(--muted); word-break: break-all; }
 
+/* 注文の入力画面 */
+.order-form {
+  max-width: 560px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.field {
+  margin: 0 0 14px;
+  padding: 0;
+  border: none;
+  min-width: 0;
+}
+
+.field > label, .field > legend {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.field input[type="date"],
+.field input[type="text"],
+.field input[type="number"],
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 16px; /* スマホで入力欄を押したときに拡大されないように */
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--text);
+}
+
+.field-row { display: flex; gap: 12px; }
+.field-row .field { flex: 1; }
+
+.choices { display: flex; gap: 20px; }
+.choices label { display: flex; align-items: center; gap: 6px; font-weight: normal; }
+.choices input { width: 18px; height: 18px; }
+
+.field.invalid input,
+.field.invalid select { border-color: #cf222e; }
+.field.invalid > label, .field.invalid > legend { color: #cf222e; }
+
+.form-message { margin: 0 0 12px; padding: 8px 10px; border-radius: 6px; }
+.form-message.error { background: #ffebe9; }
+.form-message.done { background: #dafbe1; color: #116329; }
+
+.order-form button[type="submit"] { width: 100%; }
+
 @media (min-width: 768px) {
   .app-header {
     display: flex;

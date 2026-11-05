@@ -40,7 +40,71 @@
     <div class="only-ok">
       <section id="view-order" class="view">
         <h2>注文の登録</h2>
-        <p class="placeholder">ここに注文の入力画面をつくります（WBS 1-1）。</p>
+        <form id="order-form" class="order-form" novalidate>
+          <div class="field">
+            <label for="f-orderDate">注文日</label>
+            <input type="date" id="f-orderDate" name="orderDate" required>
+          </div>
+
+          <fieldset class="field">
+            <legend>注文元の種類</legend>
+            <div class="choices">
+              <label><input type="radio" name="customerType" value="専門店" required> 専門店</label>
+              <label><input type="radio" name="customerType" value="個人"> 個人</label>
+            </div>
+          </fieldset>
+
+          <div class="field">
+            <label for="f-customerName">注文元の名前</label>
+            <input type="text" id="f-customerName" name="customerName" required autocomplete="off" placeholder="例：テスト専門店A">
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="f-quantity">数量（袋）</label>
+              <input type="number" id="f-quantity" name="quantity" required min="1" step="1" inputmode="numeric">
+            </div>
+            <div class="field">
+              <label for="f-unitPrice">単価（円）</label>
+              <input type="number" id="f-unitPrice" name="unitPrice" required min="0" step="1" inputmode="numeric">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="f-plannedShipDate">出荷予定日</label>
+            <input type="date" id="f-plannedShipDate" name="plannedShipDate" required>
+          </div>
+
+          <div class="field">
+            <label for="f-shippingMethod">送り方</label>
+            <select id="f-shippingMethod" name="shippingMethod" required>
+              <option value="">選んでください</option>
+              <option value="ゆうパック">ゆうパック</option>
+              <option value="宅急便">宅急便</option>
+              <option value="小型便">小型便（ゆうパケット・ネコポスなど）</option>
+              <option value="直接お届け">直接お届け</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="f-orderChannel">注文の届き方</label>
+            <select id="f-orderChannel" name="orderChannel" required>
+              <option value="">選んでください</option>
+              <option value="メール">メール</option>
+              <option value="FAX">FAX</option>
+              <option value="フォーム">フォーム</option>
+              <option value="電話">電話</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="f-note">備考（なくてもよい）</label>
+            <textarea id="f-note" name="note" rows="2"></textarea>
+          </div>
+
+          <p id="order-form-message" class="form-message" hidden></p>
+          <button type="submit" class="primary">登録</button>
+        </form>
       </section>
 
       <section id="view-ledger" class="view">
