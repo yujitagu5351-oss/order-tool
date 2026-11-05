@@ -1,5 +1,7 @@
 // 台帳の画面（WBS 1-4）：登録した注文を新しい順に表で並べる
-import { watchOrders, formatOrderNo } from './orders.js';
+// 機能3（WBS 3-1〜3-3）：出荷済みにする／元に戻す、出荷予定日を過ぎた未出荷の注文を目立たせる
+import { watchOrders, formatOrderNo, markShipped, unmarkShipped } from './orders.js';
+import { todayString } from './order-form.js';
 
 const bodyEl = document.getElementById('ledger-body');
 const statusEl = document.getElementById('ledger-status');
@@ -19,12 +21,52 @@ function cell(text, className) {
   return td;
 }
 
+// 出荷の列：未出荷なら「出荷済みにする」、出荷済みなら出荷日と「戻す」
+function shipCell(o, overdue) {
+  const cellEl = document.createElement('td');
+  const td = document.createElement('div'); // 中身を横に並べる箱（td そのものを flex にすると表が崩れる）
+  td.className = 'ship';
+  cellEl.append(td);
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.dataset.id = o.id;
+  if (o.shippedDate) {
+    const label = document.createElement('span');
+    label.className = 'shipped-label';
+    label.textContent = `済 ${shortDate(o.shippedDate)}`;
+    button.textContent = '戻す';
+    button.className = 'small-button';
+    button.dataset.action = 'unship';
+    td.append(label, button);
+  } else {
+    if (overdue) {
+      const badge = document.createElement('span');
+      badge.className = 'overdue-badge';
+      badge.textContent = '遅れ';
+      td.append(badge);
+    }
+    button.textContent = '出荷済みにする';
+    button.className = 'small-button primary';
+    button.dataset.action = 'ship';
+    td.append(button);
+  }
+  return cellEl;
+}
+
 // 表を描き直す（見た目の確かめにも使えるよう export しておく）
 export function render(orders) {
+  const today = todayString();
+  let overdueCount = 0;
   bodyEl.replaceChildren(...orders.map((o) => {
+    // 出荷予定日を過ぎても出荷済みになっていない（WBS 3-3）
+    const overdue = !o.shippedDate && o.plannedShipDate < today;
+    if (overdue) overdueCount += 1;
     const tr = document.createElement('tr');
+    if (overdue) tr.className = 'overdue';
+    if (o.shippedDate) tr.className = 'shipped';
     tr.append(
       cell(formatOrderNo(o.orderNo)),
+      shipCell(o, overdue),
       cell(shortDate(o.orderDate)),
       cell(o.customerType),
       cell(o.customerName),
@@ -37,10 +79,32 @@ export function render(orders) {
     );
     return tr;
   }));
-  statusEl.textContent = orders.length === 0
-    ? 'まだ注文がありません。「注文の登録」から登録してください'
-    : `全${orders.length}件（新しい順）`;
+  if (orders.length === 0) {
+    statusEl.textContent = 'まだ注文がありません。「注文の登録」から登録してください';
+    statusEl.classList.remove('warn');
+  } else {
+    statusEl.textContent = `全${orders.length}件（新しい順）`
+      + (overdueCount > 0 ? `　出荷予定日を過ぎた未出荷：${overdueCount}件` : '');
+    statusEl.classList.toggle('warn', overdueCount > 0);
+  }
 }
+
+// 「出荷済みにする」「戻す」のボタン
+bodyEl.addEventListener('click', async (e) => {
+  const button = e.target.closest('button[data-action]');
+  if (!button) return;
+  button.disabled = true; // 2回押さないように（成功すると表が描き直される）
+  try {
+    if (button.dataset.action === 'ship') {
+      await markShipped(button.dataset.id, todayString());
+    } else {
+      await unmarkShipped(button.dataset.id);
+    }
+  } catch (err) {
+    button.disabled = false;
+    alert('変更できませんでした（' + (err.code || err.message) + '）');
+  }
+});
 
 // ログインして台帳を使えるようになったら見張りを始め、ログアウトしたらやめる
 export function startLedger() {

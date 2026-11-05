@@ -8,8 +8,19 @@ import {
   query,
   runTransaction,
   serverTimestamp,
+  updateDoc,
   where,
 } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+
+// 出荷済みにする（WBS 3-1）：注文の出荷日に shippedDate（"YYYY-MM-DD"、ふつうは今日）を入れる
+export function markShipped(orderId, shippedDate) {
+  return updateDoc(doc(db, 'orders', orderId), { shippedDate });
+}
+
+// 出荷済みを元に戻す（WBS 3-2）：出荷日を空に戻す
+export function unmarkShipped(orderId) {
+  return updateDoc(doc(db, 'orders', orderId), { shippedDate: null });
+}
 
 // 出荷予定日が shipDate（"YYYY-MM-DD"）の注文を、注文番号の古い順で見張る（WBS 2-1）。
 // 並べ替えは画面側で行う（where と orderBy を別の項目で組み合わせると、Firestore に複合インデックスが要るため）

@@ -219,6 +219,23 @@ button.link-button {
 .ledger-table .num { text-align: right; }
 .ledger-table .note { white-space: normal; min-width: 8em; }
 
+/* 機能3：出荷済み・遅れの表示 */
+.ledger-status.warn { color: #cf222e; font-weight: 600; }
+.ledger-table .ship { display: flex; align-items: center; gap: 6px; }
+.small-button { padding: 4px 10px; font-size: 0.85rem; }
+.shipped-label { color: #116329; font-weight: 600; }
+.ledger-table tr.shipped td { color: var(--muted); }
+.ledger-table tr.shipped .shipped-label { color: #116329; }
+.ledger-table tr.overdue td { background: #ffebe9; }
+.overdue-badge {
+  background: #cf222e;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
 @media (min-width: 768px) {
   .app-header {
     display: flex;
