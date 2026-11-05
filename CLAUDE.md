@@ -14,6 +14,7 @@
 - データの保存とログインは Firebase（Firestore と Firebase Authentication）を使う。バックエンドのサーバーはつくらない
 - 公開は GitHub Pages（https://github.com/yujitagu5351-oss/order-tool）
 - APIキーやパスワードはコミットしない
+  - ただし Firebase の web 用設定値（js/config.js）は公開前提の識別子なのでコミットする。守りは Firestore のセキュリティルール（私の UID だけ読み書き可）で行う
 
 ## 進め方
 - 1度に1機能ずつつくる。docs/wbs.md の順に進める
