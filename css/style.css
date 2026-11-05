@@ -257,9 +257,32 @@ button.link-button {
 .sheet-table .total-label { text-align: right; font-weight: 600; }
 .sheet-table .total { font-weight: 700; font-size: 1.1rem; }
 .sheet-empty { margin: 8px 0 0; }
+.print-button { margin-left: auto; }
+
+/* 印刷（WBS 2-3）：出荷指示書だけを、A4縦に作業メモとして使える体裁で出す */
+@page {
+  size: A4 portrait;
+  margin: 15mm 12mm;
+}
 
 @media print {
   .no-print { display: none !important; }
-  body { background: #fff; }
+  body { background: #fff; color: #000; font-size: 11pt; }
   main { max-width: none; padding: 0; }
+
+  /* 出荷指示書の画面以外は印刷しない */
+  #view-order, #view-ledger { display: none !important; }
+
+  .sheet { border: none; border-radius: 0; padding: 0; }
+  .sheet-header { border-bottom: 2px solid #000; padding-bottom: 6px; margin-bottom: 10px; }
+  .sheet-title { font-size: 18pt; }
+  .sheet-date { font-size: 14pt; }
+
+  .sheet-table { font-size: 12pt; }
+  .sheet-table th, .sheet-table td { border: 1px solid #000; padding: 9pt 6pt; }
+  .sheet-table th { background: #e6e6e6; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .sheet-table td.check { font-size: 18pt; }
+  .sheet-table thead { display: table-header-group; } /* 2枚目にまたがったら見出しを繰り返す */
+  .sheet-table tr { break-inside: avoid; }             /* 1行が2枚に分かれないように */
+  .sheet-table .total { font-size: 13pt; }
 }

@@ -69,6 +69,9 @@ dateInput.addEventListener('change', () => {
   if (active) watchSelectedDate();
 });
 
+// 印刷（WBS 2-3）：ブラウザの印刷画面を開く。メニューなどは CSS の @media print で消える
+document.getElementById('print-button').addEventListener('click', () => window.print());
+
 // ログインして台帳を使えるようになったら始める。日付の初期値は今日
 export function startSheet() {
   if (active) return;
