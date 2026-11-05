@@ -2,6 +2,7 @@
 // 委託先に渡すものなので、金額（単価など）は載せない
 import { watchOrdersByShipDate, formatOrderNo } from './orders.js';
 import { todayString } from './order-form.js';
+import { logUsage } from './usage.js';
 
 const dateInput = document.getElementById('sheet-date');
 const dateLabel = document.getElementById('sheet-date-label');
@@ -71,6 +72,11 @@ dateInput.addEventListener('change', () => {
 
 // 印刷（WBS 2-3）：ブラウザの印刷画面を開く。メニューなどは CSS の @media print で消える
 document.getElementById('print-button').addEventListener('click', () => window.print());
+
+// 使われ方の記録（WBS 7-1）：出荷指示書の画面で印刷画面を開いたら記録する（Ctrl+P で開いたときも）
+window.addEventListener('beforeprint', () => {
+  if (active && location.hash === '#sheet') logUsage('出荷指示書を印刷', `${dateInput.value} ${statusEl.textContent}`);
+});
 
 // ログインして台帳を使えるようになったら始める。日付の初期値は今日
 export function startSheet() {

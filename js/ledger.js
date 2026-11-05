@@ -3,6 +3,7 @@
 // 機能8（WBS 8-1・8-2）：「直す」で入力画面を直す形で開く（消すのも、そこから）
 import { watchOrders, formatOrderNo, markShipped, unmarkShipped } from './orders.js';
 import { todayString, startEdit } from './order-form.js';
+import { logUsage } from './usage.js';
 
 const bodyEl = document.getElementById('ledger-body');
 const statusEl = document.getElementById('ledger-status');
@@ -127,11 +128,15 @@ bodyEl.addEventListener('click', async (e) => {
     return;
   }
   button.disabled = true; // 2回押さないように（成功すると表が描き直される）
+  const order = ordersById.get(button.dataset.id); // 表が描き直される前に、注文番号を控えておく
+  const no = order ? formatOrderNo(order.orderNo) : '';
   try {
     if (button.dataset.action === 'ship') {
       await markShipped(button.dataset.id, todayString());
+      logUsage('出荷済みにする', no);
     } else {
       await unmarkShipped(button.dataset.id);
+      logUsage('戻す', no);
     }
   } catch (err) {
     button.disabled = false;

@@ -192,6 +192,10 @@ button.link-button {
 .edit-actions button[hidden] { display: none; }
 button.danger { color: #cf222e; border-color: #cf222e; background: #fff; }
 
+/* 書き出しの画面：使われ方の記録 */
+.sub-heading { font-size: 1.05rem; margin: 24px 0 8px; }
+#usage-export-button { width: 100%; }
+
 /* 設定の画面 */
 .settings-note { margin: 0 0 14px; }
 .fee-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; margin-top: 8px; }

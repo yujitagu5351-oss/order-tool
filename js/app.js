@@ -12,6 +12,7 @@ import { addOrder, updateOrder, deleteOrder, formatOrderNo } from './orders.js';
 import { startLedger, stopLedger, showLedgerFlash } from './ledger.js';
 import { startSheet, stopSheet } from './sheet.js';
 import { startSettings, stopSettings, getSettings } from './settings.js';
+import { logUsage } from './usage.js';
 import './export.js'; // 書き出しの画面（ボタンを押したときだけ台帳を読むので、開始・停止は要らない）
 
 // 注文の入力画面：「登録」で注文番号を付けて台帳に入れる（WBS 1-2）。
@@ -27,12 +28,14 @@ initOrderForm(async (data, ui) => {
   try {
     if (ui.editing) {
       await updateOrder(ui.editing, data, getSettings());
+      logUsage('直す', formatOrderNo(ui.editing.orderNo));
       const no = formatOrderNo(ui.editing.orderNo);
       ui.endEdit();
       showLedgerFlash(`注文 ${no} を直しました`);
       location.hash = '#ledger';
     } else {
       const orderNo = await addOrder(data, getSettings());
+      logUsage('登録', formatOrderNo(orderNo));
       ui.resetOrderForm();
       ui.showMessage(
         `注文番号 ${formatOrderNo(orderNo)} で登録しました：`
@@ -52,6 +55,7 @@ initOrderForm(async (data, ui) => {
   ui.setBusy(true);
   try {
     await deleteOrder(order.id);
+    logUsage('消す', no);
     ui.endEdit();
     showLedgerFlash(`注文 ${no} を消しました（番号 ${no} は欠番になります）`);
     location.hash = '#ledger';

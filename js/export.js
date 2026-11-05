@@ -6,6 +6,7 @@
 import { fetchAllOrders, formatOrderNo } from './orders.js';
 import { getSettings } from './settings.js';
 import { todayString } from './order-form.js';
+import { logUsage, fetchUsage } from './usage.js';
 
 const COLUMNS = [
   '注文番号', '注文日', '注文元の種類', '注文元の名前', '数量（袋）', '単価',
@@ -54,8 +55,8 @@ function csvValue(v) {
   return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
 }
 
-export function toCsv(rows) {
-  const lines = [COLUMNS, ...rows].map((r) => r.map(csvValue).join(','));
+export function toCsv(rows, columns = COLUMNS) {
+  const lines = [columns, ...rows].map((r) => r.map(csvValue).join(','));
   return '﻿' + lines.join('\r\n') + '\r\n'; // 先頭の ﻿ が BOM。Excel が UTF-8 だとわかる
 }
 
@@ -113,6 +114,7 @@ form.addEventListener('submit', async (e) => {
     }
     const scopeLabel = scope === 'all' ? 'すべて' : '出荷済み';
     download(toCsv(rows), `受注台帳_${from}_${to}_${scopeLabel}.csv`);
+    logUsage('書き出し', `${from}〜${to} ${scopeLabel} ${rows.length}件`);
     showMessage(
       `${rows.length}件を書き出しました（売上金額の合計 ${totalSales.toLocaleString('ja-JP')}円）`
         + (missingFee > 0 ? `。${missingFee}件は作業代か送料が決まっていないので、その欄が空です。「設定」で金額を保存してください` : ''),
@@ -122,5 +124,48 @@ form.addEventListener('submit', async (e) => {
     showMessage('書き出せませんでした（' + (err.code || err.message) + '）', 'error');
   } finally {
     button.disabled = false;
+  }
+});
+
+// ---- 使われ方の記録の書き出し（WBS 7-1） ----
+
+const USAGE_COLUMNS = ['日付', '時刻', '機能', '端末', '補足'];
+const usageMessageEl = document.getElementById('usage-message');
+const usageButton = document.getElementById('usage-export-button');
+
+function showUsageMessage(text, kind) {
+  usageMessageEl.textContent = text;
+  usageMessageEl.className = 'form-message ' + kind;
+  usageMessageEl.hidden = false;
+}
+
+// 機能ごとの回数を「登録 5回、出荷済みにする 4回」のような文にする（見た目の確かめにも使えるよう export）
+export function summarizeUsage(logs) {
+  const counts = new Map();
+  logs.forEach((l) => counts.set(l.feature, (counts.get(l.feature) || 0) + 1));
+  return [...counts].map(([f, n]) => `${f} ${n}回`).join('、');
+}
+
+usageButton.addEventListener('click', async () => {
+  const from = form.from.value;
+  const to = form.to.value;
+  if (!from || !to || from > to) {
+    showUsageMessage('上の開始日と終了日を確かめてください（開始日は終了日より前に）', 'error');
+    return;
+  }
+  usageButton.disabled = true;
+  try {
+    const logs = await fetchUsage(from, to);
+    if (logs.length === 0) {
+      showUsageMessage('この期間の記録はありません', 'error');
+      return;
+    }
+    const rows = logs.map((l) => [l.date, l.time, l.feature, l.device, l.detail || '']);
+    download(toCsv(rows, USAGE_COLUMNS), `使われ方_${from}_${to}.csv`);
+    showUsageMessage(`${logs.length}件を書き出しました（${summarizeUsage(logs)}）`, 'done');
+  } catch (err) {
+    showUsageMessage('書き出せませんでした（' + (err.code || err.message) + '）', 'error');
+  } finally {
+    usageButton.disabled = false;
   }
 });
