@@ -1,0 +1,13 @@
+rules_version = '2';
+
+// Firestore のセキュリティルール（控え）。
+// 実際に効くのは Firebase の管理画面（Firestore → ルール）に貼ったもの。変えたらここも同じにする。
+// 運営者（私）の Google アカウントの UID だけが、すべてのデータを読み書きできる。それ以外は誰も読めない。
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if request.auth != null
+                         && request.auth.uid == 'ここに私のUIDを入れる';
+    }
+  }
+}
