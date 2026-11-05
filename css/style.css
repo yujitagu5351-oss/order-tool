@@ -166,6 +166,9 @@ button.link-button {
   color: var(--text);
 }
 
+.hint { margin: 4px 0 0; font-size: 0.8rem; color: var(--muted); }
+.hint.warn { color: #b35900; }
+
 .field-row { display: flex; gap: 12px; }
 .field-row .field { flex: 1; }
 

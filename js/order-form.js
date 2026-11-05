@@ -1,5 +1,6 @@
 // 注文の入力画面（WBS 1-1）：初期値を入れ、「登録」で入力をチェックして、1件分の注文データにまとめる
-// Firestore への保存は WBS 1-2 で orders.js につくる
+// Firestore への保存は orders.js（WBS 1-2）
+import { HOLIDAY_YEARS, nextBusinessDay } from './holidays.js';
 
 // 今日の日付を "YYYY-MM-DD" で返す（端末の時刻＝日本時間で数える）
 export function todayString() {
@@ -31,10 +32,23 @@ function showMessage(text, kind) {
   messageEl.hidden = false;
 }
 
-// 初期値：注文日＝今日。出荷予定日の初期値（翌営業日）は WBS 1-3 で入れる
+// 初期値：注文日＝今日、出荷予定日＝翌営業日（土日祝日を除く。WBS 1-3）
 export function resetOrderForm() {
   form.reset();
-  form.orderDate.value = todayString();
+  const today = todayString();
+  form.orderDate.value = today;
+  form.plannedShipDate.value = nextBusinessDay(today);
+
+  // 祝日の一覧に入っていない年なら、毎年の追記を忘れていることを知らせる
+  const hint = document.getElementById('ship-date-hint');
+  const year = Number(form.plannedShipDate.value.slice(0, 4));
+  if (HOLIDAY_YEARS.includes(year)) {
+    hint.textContent = '初期値は翌営業日（土日祝日を除く）。手で変えられます';
+    hint.classList.remove('warn');
+  } else {
+    hint.textContent = `祝日の一覧に${year}年がありません（土日だけ除いています）。js/holidays.js に${year}年の祝日を足してください`;
+    hint.classList.add('warn');
+  }
   form.querySelectorAll('.field.invalid').forEach((el) => el.classList.remove('invalid'));
 }
 
