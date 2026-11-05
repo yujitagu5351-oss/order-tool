@@ -35,13 +35,14 @@ body {
 
 .menu {
   display: flex;
-  gap: 4px;
+  gap: 2px;
+  overflow-x: auto; /* 5つ並ぶので、狭いスマホでは横にずらして選べるように */
 }
 
 .menu a {
-  flex: 1;
+  flex: 1 0 auto;
   text-align: center;
-  padding: 8px 4px;
+  padding: 8px 6px;
   border-radius: 6px;
   color: var(--text);
   text-decoration: none;
@@ -293,7 +294,7 @@ button.link-button {
   main { max-width: none; padding: 0; }
 
   /* 出荷指示書の画面以外は印刷しない */
-  #view-order, #view-ledger, #view-settings { display: none !important; }
+  #view-order, #view-ledger, #view-export, #view-settings { display: none !important; }
 
   .sheet { border: none; border-radius: 0; padding: 0; }
   .sheet-header { border-bottom: 2px solid #000; padding-bottom: 6px; margin-bottom: 10px; }

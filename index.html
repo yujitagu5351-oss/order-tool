@@ -14,6 +14,7 @@
       <a href="#order" data-view="order">注文の登録</a>
       <a href="#ledger" data-view="ledger">台帳</a>
       <a href="#sheet" data-view="sheet">出荷指示書</a>
+      <a href="#export" data-view="export">書き出し</a>
       <a href="#settings" data-view="settings">設定</a>
     </nav>
   </header>
@@ -171,6 +172,35 @@
           </table>
           <p id="sheet-empty" class="sheet-empty" hidden>この日に出荷する注文はありません。</p>
         </article>
+      </section>
+
+      <section id="view-export" class="view">
+        <h2>書き出し（CSV）</h2>
+        <form id="export-form" class="order-form" novalidate>
+          <p class="hint settings-note">期間は出荷日で選びます（まだ出荷していない注文は、出荷予定日で選びます）。Excel でそのまま開けます。</p>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="e-from">開始日</label>
+              <input type="date" id="e-from" name="from" required>
+            </div>
+            <div class="field">
+              <label for="e-to">終了日</label>
+              <input type="date" id="e-to" name="to" required>
+            </div>
+          </div>
+
+          <fieldset class="field">
+            <legend>書き出す注文</legend>
+            <div class="choices">
+              <label><input type="radio" name="scope" value="shipped" checked> 出荷済みだけ</label>
+              <label><input type="radio" name="scope" value="all"> すべて</label>
+            </div>
+          </fieldset>
+
+          <p id="export-message" class="form-message" hidden></p>
+          <button type="submit" class="primary">CSVを書き出す</button>
+        </form>
       </section>
 
       <section id="view-settings" class="view">

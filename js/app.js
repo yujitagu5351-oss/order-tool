@@ -12,6 +12,7 @@ import { addOrder, formatOrderNo } from './orders.js';
 import { startLedger, stopLedger } from './ledger.js';
 import { startSheet, stopSheet } from './sheet.js';
 import { startSettings, stopSettings, getSettings } from './settings.js';
+import './export.js'; // 書き出しの画面（ボタンを押したときだけ台帳を読むので、開始・停止は要らない）
 
 // 注文の入力画面：「登録」で注文番号を付けて台帳に入れる（WBS 1-2）
 initOrderForm(async (data, ui) => {
@@ -136,7 +137,7 @@ if (isConfigured) {
 
 // ---- 画面の切り替え：URL の # （#order / #ledger / #sheet）で表示する画面を決める ----
 
-const VIEWS = ['order', 'ledger', 'sheet', 'settings'];
+const VIEWS = ['order', 'ledger', 'sheet', 'export', 'settings'];
 const DEFAULT_VIEW = 'order';
 
 function showView() {

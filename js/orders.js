@@ -3,6 +3,7 @@ import { db } from './firebase.js';
 import {
   collection,
   doc,
+  getDocs,
   onSnapshot,
   orderBy,
   query,
@@ -11,6 +12,12 @@ import {
   updateDoc,
   where,
 } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+
+// 台帳の全注文を1回だけ読む（CSVの書き出し用。WBS 4-1）
+export async function fetchAllOrders() {
+  const snap = await getDocs(collection(db, 'orders'));
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
 
 // 出荷済みにする（WBS 3-1）：注文の出荷日に shippedDate（"YYYY-MM-DD"、ふつうは今日）を入れる
 export function markShipped(orderId, shippedDate) {
