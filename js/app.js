@@ -8,15 +8,27 @@ import {
 } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 import { initOrderForm } from './order-form.js';
+import { addOrder, formatOrderNo } from './orders.js';
 
-// 注文の入力画面。保存（注文番号を付けて台帳に入れる）は WBS 1-2 でつくる。
-// それまでは、入力チェックを通った内容を確かめのために表示するだけ
-initOrderForm((data, ui) => {
-  ui.showMessage(
-    '入力はOKです（まだ保存はしません。保存はステップ6でつくります）：'
-      + `${data.customerName}／${data.quantity}袋／出荷予定日 ${data.plannedShipDate}／${data.shippingMethod}`,
-    'done',
-  );
+// 注文の入力画面：「登録」で注文番号を付けて台帳に入れる（WBS 1-2）
+initOrderForm(async (data, ui) => {
+  const button = document.querySelector('#order-form button[type="submit"]');
+  button.disabled = true; // 2回押して二重に登録しないように
+  button.textContent = '登録しています…';
+  try {
+    const orderNo = await addOrder(data);
+    ui.resetOrderForm();
+    ui.showMessage(
+      `注文番号 ${formatOrderNo(orderNo)} で登録しました：`
+        + `${data.customerName}／${data.quantity}袋／出荷予定日 ${data.plannedShipDate}／${data.shippingMethod}`,
+      'done',
+    );
+  } catch (e) {
+    ui.showMessage('登録できませんでした。電波やWi-Fiを確かめて、もう一度押してください（' + (e.code || e.message) + '）', 'error');
+  } finally {
+    button.disabled = false;
+    button.textContent = '登録';
+  }
 });
 
 const statusEl = document.getElementById('firebase-status');
