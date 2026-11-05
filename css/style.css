@@ -70,6 +70,16 @@ main {
 
 .placeholder { color: var(--muted); }
 
+.app-footer {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 8px 16px 24px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.app-footer .warn { color: #b35900; }
+
 @media (min-width: 768px) {
   .app-header {
     display: flex;
