@@ -3,9 +3,24 @@ import { db } from './firebase.js';
 import {
   collection,
   doc,
+  onSnapshot,
+  orderBy,
+  query,
   runTransaction,
   serverTimestamp,
 } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+
+// 台帳の全注文を、注文番号の新しい順で見張る（WBS 1-4）。
+// 登録や変更があるたびに onChange(注文の配列) が呼ばれる。PCで登録すればスマホの台帳もすぐ変わる。
+// 戻り値の関数を呼ぶと見張りをやめる
+export function watchOrders(onChange, onError) {
+  const q = query(collection(db, 'orders'), orderBy('orderNo', 'desc'));
+  return onSnapshot(
+    q,
+    (snap) => onChange(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+    onError,
+  );
+}
 
 // 注文番号は数値で保存し、画面や出荷指示書では4桁（0001）で見せる
 export function formatOrderNo(n) {

@@ -110,7 +110,26 @@
 
       <section id="view-ledger" class="view">
         <h2>台帳</h2>
-        <p class="placeholder">ここに登録した注文の一覧をつくります（WBS 1-4）。</p>
+        <p id="ledger-status" class="ledger-status">読み込んでいます…</p>
+        <div class="table-scroll">
+          <table class="ledger-table">
+            <thead>
+              <tr>
+                <th>注文番号</th>
+                <th>注文日</th>
+                <th>種類</th>
+                <th>注文元</th>
+                <th class="num">数量</th>
+                <th class="num">単価</th>
+                <th>出荷予定日</th>
+                <th>送り方</th>
+                <th>届き方</th>
+                <th>備考</th>
+              </tr>
+            </thead>
+            <tbody id="ledger-body"></tbody>
+          </table>
+        </div>
       </section>
 
       <section id="view-sheet" class="view">

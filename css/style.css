@@ -186,6 +186,34 @@ button.link-button {
 
 .order-form button[type="submit"] { width: 100%; }
 
+/* 台帳の一覧：狭い画面では表だけ横にスクロールする */
+.ledger-status { color: var(--muted); font-size: 0.9rem; margin: 0 0 8px; }
+
+.table-scroll {
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.ledger-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.ledger-table th, .ledger-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.ledger-table th { background: var(--bg); font-weight: 600; }
+.ledger-table tbody tr:last-child td { border-bottom: none; }
+.ledger-table .num { text-align: right; }
+.ledger-table .note { white-space: normal; min-width: 8em; }
+
 @media (min-width: 768px) {
   .app-header {
     display: flex;
