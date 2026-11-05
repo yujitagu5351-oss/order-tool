@@ -24,7 +24,10 @@ initOrderForm(async (data, ui) => {
       'done',
     );
   } catch (e) {
-    ui.showMessage('登録できませんでした。電波やWi-Fiを確かめて、もう一度押してください（' + (e.code || e.message) + '）', 'error');
+    const reason = e.code === 'permission-denied'
+      ? '台帳に書き込む権限がありません。運営者のアカウントでログインし直してください'
+      : '電波やWi-Fiを確かめて、もう一度押してください';
+    ui.showMessage('登録できませんでした。' + reason + '（' + (e.code || e.message) + '）', 'error');
   } finally {
     button.disabled = false;
     button.textContent = '登録';
