@@ -8,7 +8,21 @@ import {
   query,
   runTransaction,
   serverTimestamp,
+  where,
 } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+
+// 出荷予定日が shipDate（"YYYY-MM-DD"）の注文を、注文番号の古い順で見張る（WBS 2-1）。
+// 並べ替えは画面側で行う（where と orderBy を別の項目で組み合わせると、Firestore に複合インデックスが要るため）
+export function watchOrdersByShipDate(shipDate, onChange, onError) {
+  const q = query(collection(db, 'orders'), where('plannedShipDate', '==', shipDate));
+  return onSnapshot(
+    q,
+    (snap) => onChange(
+      snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => a.orderNo - b.orderNo),
+    ),
+    onError,
+  );
+}
 
 // 台帳の全注文を、注文番号の新しい順で見張る（WBS 1-4）。
 // 登録や変更があるたびに onChange(注文の配列) が呼ばれる。PCで登録すればスマホの台帳もすぐ変わる。

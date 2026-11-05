@@ -10,6 +10,7 @@ import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase
 import { initOrderForm } from './order-form.js';
 import { addOrder, formatOrderNo } from './orders.js';
 import { startLedger, stopLedger } from './ledger.js';
+import { startSheet, stopSheet } from './sheet.js';
 
 // 注文の入力画面：「登録」で注文番号を付けて台帳に入れる（WBS 1-2）
 initOrderForm(async (data, ui) => {
@@ -99,6 +100,7 @@ function startAuth() {
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
       stopLedger();
+      stopSheet();
       setAuthState('signed-out');
       setStatus('Firebase：接続しています（' + app.options.projectId + '）。ログインしていません');
       return;
@@ -109,9 +111,11 @@ function startAuth() {
     if (result.ok) {
       setAuthState('ok');
       startLedger();
+      startSheet();
       setStatus('Firebase：接続しています（' + app.options.projectId + '）。台帳を使えます');
     } else {
       stopLedger();
+      stopSheet();
       setAuthState('denied');
       setStatus('Firebase：台帳を読めません（' + result.code + '）', true);
     }

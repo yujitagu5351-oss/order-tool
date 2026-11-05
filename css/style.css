@@ -224,6 +224,39 @@ button.link-button {
   .menu a { flex: none; padding: 8px 14px; }
 }
 
+/* 出荷指示書（画面での見た目。印刷の体裁は WBS 2-3 で整える） */
+.sheet-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.sheet-controls label { font-weight: 600; }
+.sheet-controls input[type="date"] {
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 16px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.sheet-controls .ledger-status { margin: 0; }
+
+.sheet {
+  background: #fff;
+  color: #000;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.sheet-header { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.sheet-title { margin: 0; font-size: 1.3rem; }
+.sheet-date { margin: 0; font-size: 1.1rem; font-weight: 600; }
+
+.sheet-table { width: 100%; border-collapse: collapse; font-size: 1rem; }
+.sheet-table th, .sheet-table td { border: 1px solid #333; padding: 10px 8px; text-align: left; }
+.sheet-table th { background: #eee; }
+.sheet-table .num { text-align: right; white-space: nowrap; }
+.sheet-table .check { width: 2.5em; text-align: center; font-size: 1.3rem; }
+.sheet-table .total-label { text-align: right; font-weight: 600; }
+.sheet-table .total { font-weight: 700; font-size: 1.1rem; }
+.sheet-empty { margin: 8px 0 0; }
+
 @media print {
   .no-print { display: none !important; }
   body { background: #fff; }

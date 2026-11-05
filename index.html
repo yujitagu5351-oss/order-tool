@@ -133,8 +133,41 @@
       </section>
 
       <section id="view-sheet" class="view">
-        <h2>出荷指示書</h2>
-        <p class="placeholder">ここにその日の出荷指示書をつくります（WBS 2-1〜2-3）。</p>
+        <h2 class="no-print">出荷指示書</h2>
+        <div class="sheet-controls no-print">
+          <label for="sheet-date">出荷日</label>
+          <input type="date" id="sheet-date">
+          <p id="sheet-status" class="ledger-status"></p>
+        </div>
+
+        <!-- ここから下が、委託先に渡す出荷指示書（金額は載せない） -->
+        <article class="sheet">
+          <header class="sheet-header">
+            <h3 class="sheet-title">出荷指示書</h3>
+            <p class="sheet-date">出荷日：<span id="sheet-date-label"></span></p>
+          </header>
+          <table class="sheet-table">
+            <thead>
+              <tr>
+                <th class="check">済</th>
+                <th>注文番号</th>
+                <th>注文元</th>
+                <th class="num">数量（袋）</th>
+                <th>送り方</th>
+                <th>備考</th>
+              </tr>
+            </thead>
+            <tbody id="sheet-body"></tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3" class="total-label">合計</td>
+                <td class="num total" id="sheet-total"></td>
+                <td colspan="2"></td>
+              </tr>
+            </tfoot>
+          </table>
+          <p id="sheet-empty" class="sheet-empty" hidden>この日に出荷する注文はありません。</p>
+        </article>
       </section>
     </div>
   </main>
